@@ -47,21 +47,17 @@ Potential features include:
 
 All features must be derived exclusively from information available at the forecast origin to prevent data leakage.
 
-### Alternative Candidate: XGBoost
+### Alternative Candidate: Chronos-2
 
-XGBoost may be evaluated if additional model comparison is justified by the results of the baseline and LightGBM experiments.
+Chronos-2 will be evaluated as a pretrained time-series foundation model using zero-shot forecasting. It provides a complementary approach to LightGBM by leveraging pretrained temporal representations rather than relying solely on a model trained on the project dataset.
 
-### Multi-Step Forecasting Strategy
-
-The initial implementation will use recursive forecasting to generate predictions for the 13-week horizon. Each subsequent prediction will use previously predicted demand where future lagged observations are unavailable.
-
-The evaluation will account for potential error accumulation across the forecast horizon. Alternative multi-step strategies may be considered if recursive forecasting performs poorly.
+Its performance will be evaluated using the same forecast origins, target periods, and compatible metrics as the baseline and LightGBM.
 
 ### Model Selection
 
-The final model will be selected based on out-of-sample performance, forecast bias, computational practicality, and usefulness for inventory planning.
+Seasonal Naive will serve as the baseline, LightGBM as the primary supervised machine learning candidate, and Chronos-2 as the alternative foundation model.
 
-A more complex model will not automatically be considered better than a simpler baseline.
+The preferred approach will be selected based on out-of-sample forecasting performance, forecast bias, computational practicality, and usefulness for inventory planning. Chronos-2 will not be assumed to outperform LightGBM without empirical evaluation.
 
 ## 4. Evaluation Method
 
@@ -158,7 +154,7 @@ No numerical accuracy target or business improvement will be claimed before eval
 
 - Validated weekly demand dataset.
 - Baseline forecast results.
-- LightGBM forecast results and optional XGBoost comparison.
+- LightGBM forecast results and optional Chronos-2 comparison.
 - Out-of-sample evaluation across the 13-week horizon.
 - WAPE, MAE, forecast bias, and optional MASE results.
 - Forecast outputs suitable for inventory risk analysis.

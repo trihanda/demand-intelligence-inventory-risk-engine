@@ -1,0 +1,32 @@
+{
+  "input_file": "data/synthetic/sales_transactions.csv",
+  "standardized_output": "data/processed/standardized_sales_transactions.csv",
+  "excluded_output": "data/processed/excluded_sales_transactions.csv",
+  "input_rows": 32134,
+  "standardized_rows": 32132,
+  "excluded_rows": 2,
+  "missing_customer_id_rows_retained_if_otherwise_valid": 1,
+  "standardized_negative_quantity_rows": 0,
+  "standardized_amount_mismatch_rows": 0,
+  "included_status": "posted",
+  "business_key_for_duplicate_detection": [
+    "invoice_id",
+    "sku",
+    "warehouse_id",
+    "transaction_date",
+    "quantity"
+  ],
+  "exclusion_reason_counts": {
+    "negative_quantity_requires_business_review": 1,
+    "duplicate_business_record_candidate": 1
+  },
+  "decisions": [
+    "Source data was not modified.",
+    "Negative quantities were excluded pending business clarification.",
+    "Missing customer_id was not an exclusion criterion for SKU-level demand.",
+    "The first eligible occurrence of a duplicate business key was retained.",
+    "Only 'posted' transactions were included."
+  ],
+  "anomaly_log_available": true,
+  "anomaly_log_rows": 6
+}

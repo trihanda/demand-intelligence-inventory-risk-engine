@@ -1,0 +1,40 @@
+{
+    "assessment": "Sales Data Quality Assessment",
+    "synthetic_data": true,
+    "summary": {
+        "dataset": "data/synthetic/sales_transactions.csv",
+        "row_count": 32134,
+        "column_count": 10,
+        "missing_cells": 1,
+        "duplicate_invoice_line_id_rows": 0,
+        "duplicate_business_record_candidate_rows": 2,
+        "duplicate_full_row_count": 0,
+        "invalid_or_missing_date_rows": 0,
+        "missing_or_invalid_quantity_rows": 0,
+        "negative_quantity_rows": 1,
+        "zero_quantity_rows": 0,
+        "negative_unit_price_rows": 0,
+        "negative_line_amount_rows": 0,
+        "line_amount_mismatch_rows": 0,
+        "missing_or_blank_status_rows": 0,
+        "unexpected_status_rows": 0,
+        "issue_record_count": 4,
+        "expected_status_values": [
+            "cancelled",
+            "pending",
+            "posted",
+            "returned"
+        ],
+        "note": "Issue counts are rule-level counts; one source row may trigger more than one rule. Review context before removing or correcting records.",
+        "anomaly_log_available": true,
+        "sales_anomalies_logged": 3,
+        "logged_sales_anomalies_detected": 3
+    },
+    "outputs": [
+        "column_missingness.csv",
+        "data_quality_issues.csv",
+        "transaction_status_distribution.csv",
+        "anomaly_reconciliation.csv"
+    ],
+    "source_data_modified": false
+}

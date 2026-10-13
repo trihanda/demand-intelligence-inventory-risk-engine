@@ -5,6 +5,9 @@ Purpose:
     Establish a baseline understanding of the raw sales transaction dataset
     before data cleaning and weekly demand aggregation.
 
+Input:
+    data/synthetic/sales_transactions.csv
+
 Outputs:
     reports/sales_data_profiling/
         sales_data_profile.json
@@ -13,61 +16,46 @@ Outputs:
 
 Usage:
     python src/profile_sales_data.py
+
+Notes:
+    This script reports on the source dataset without modifying it.
 """
 
 import json
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
-
-# ============================================================
-# 1. CONFIGURATION
-# ============================================================
-
+# 1. Configuration
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
 INPUT_FILE = (
     PROJECT_ROOT
     / "data"
     / "synthetic"
     / "sales_transactions.csv"
 )
-
 OUTPUT_DIR = PROJECT_ROOT / "reports" / "sales_data_profiling"
-
 DATE_COL = "transaction_date"
 SKU_COL = "sku"
 QUANTITY_COL = "quantity"
-
 TOP_N_SKUS = 10
 
-
-# ============================================================
-# 2. LOAD DATA
-# ============================================================
-
+# 2. Load Data
 def load_sales_data(file_path: Path) -> pd.DataFrame:
     """Load sales transactions and validate required columns."""
-
     if not file_path.exists():
         raise FileNotFoundError(
             f"Sales dataset not found: {file_path}\n"
             "Check the input path and dataset location."
         )
-
     df = pd.read_csv(file_path)
-
     required_columns = {DATE_COL, SKU_COL, QUANTITY_COL}
     missing_columns = required_columns.difference(df.columns)
-
     if missing_columns:
         raise ValueError(
             f"Required columns are missing: {sorted(missing_columns)}\n"
             f"Available columns: {df.columns.tolist()}"
         )
-
     print("=" * 65)
     print("SALES DATA PROFILING")
     print("=" * 65)
@@ -75,30 +63,21 @@ def load_sales_data(file_path: Path) -> pd.DataFrame:
     print(f"Rows             : {len(df):,}")
     print(f"Columns          : {len(df.columns):,}")
     print(f"Column names     : {df.columns.tolist()}")
-
     return df
 
-
-# ============================================================
-# 3. PROFILE DATA COVERAGE
-# ============================================================
-
+# 3. Profile Data Coverage
 def profile_data_coverage(df: pd.DataFrame) -> dict:
     """Summarize dataset size, date coverage, and SKU coverage."""
-
     dates = pd.to_datetime(df[DATE_COL], errors="coerce")
     valid_dates = dates.dropna()
     valid_skus = df[SKU_COL].dropna()
-
     date_min = valid_dates.min() if not valid_dates.empty else None
     date_max = valid_dates.max() if not valid_dates.empty else None
-
     calendar_days = (
         (date_max - date_min).days + 1
         if date_min is not None and date_max is not None
         else None
     )
-
     summary = {
         "dataset": INPUT_FILE.relative_to(PROJECT_ROOT).as_posix(),
         "row_count": int(len(df)),
@@ -142,20 +121,13 @@ def profile_data_coverage(df: pd.DataFrame) -> dict:
             ),
         },
     }
-
     return summary
 
-
-# ============================================================
-# 4. PROFILE QUANTITY DISTRIBUTION
-# ============================================================
-
+# 4. Profile Quantity Distribution
 def profile_quantity_distribution(df: pd.DataFrame) -> pd.DataFrame:
     """Calculate descriptive statistics for transaction quantities."""
-
     quantity = pd.to_numeric(df[QUANTITY_COL], errors="coerce")
     valid_quantity = quantity.dropna()
-
     metrics = {
         "row_count": int(len(df)),
         "valid_quantity_count": int(valid_quantity.count()),
@@ -175,33 +147,23 @@ def profile_quantity_distribution(df: pd.DataFrame) -> pd.DataFrame:
         "negative_quantity_rows": int((valid_quantity < 0).sum()),
         "positive_quantity_rows": int((valid_quantity > 0).sum()),
     }
-
     return pd.DataFrame(
         [{"metric": key, "value": value} for key, value in metrics.items()]
     )
 
-
-# ============================================================
-# 5. PROFILE SKU TRANSACTION COVERAGE
-# ============================================================
-
+# 5. Profile Sku Transaction Coverage
 def profile_sku_coverage(df: pd.DataFrame) -> pd.DataFrame:
     """Summarize transaction counts and date coverage for each SKU."""
-
     working = df[[DATE_COL, SKU_COL, QUANTITY_COL]].copy()
-
     working["_parsed_date"] = pd.to_datetime(
         working[DATE_COL],
         errors="coerce",
     )
-
     working["_numeric_quantity"] = pd.to_numeric(
         working[QUANTITY_COL],
         errors="coerce",
     )
-
     working = working.dropna(subset=[SKU_COL])
-
     sku_profile = (
         working.groupby(SKU_COL)
         .agg(
@@ -215,30 +177,21 @@ def profile_sku_coverage(df: pd.DataFrame) -> pd.DataFrame:
         )
         .reset_index()
     )
-
     sku_profile["historical_span_days"] = (
         sku_profile["last_transaction_date"]
         - sku_profile["first_transaction_date"]
     ).dt.days + 1
-
     for column in ["first_transaction_date", "last_transaction_date"]:
         sku_profile[column] = sku_profile[column].dt.strftime("%Y-%m-%d")
-
     return sku_profile.sort_values(
         "transaction_count",
         ascending=False,
     )
 
-
-# ============================================================
-# 6. PROFILE TRANSACTION FREQUENCY
-# ============================================================
-
+# 6. Profile Transaction Frequency
 def profile_transaction_frequency(df: pd.DataFrame) -> dict:
     """Summarize transaction count distribution across SKUs."""
-
     sku_counts = df[SKU_COL].dropna().value_counts()
-
     if sku_counts.empty:
         return {
             "sku_count_with_transactions": 0,
@@ -248,7 +201,6 @@ def profile_transaction_frequency(df: pd.DataFrame) -> dict:
             "maximum_transactions_per_sku": None,
             "top_skus_by_transaction_count": [],
         }
-
     return {
         "sku_count_with_transactions": int(sku_counts.size),
         "minimum_transactions_per_sku": int(sku_counts.min()),
@@ -264,70 +216,48 @@ def profile_transaction_frequency(df: pd.DataFrame) -> dict:
         ],
     }
 
-
-# ============================================================
-# 7. SAVE REPORTS
-# ============================================================
-
+# 7. Save Reports
 def save_reports(
     summary: dict,
     sku_profile: pd.DataFrame,
     quantity_profile: pd.DataFrame,
 ) -> None:
     """Save structured profiling outputs."""
-
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
     summary_path = OUTPUT_DIR / "sales_data_profile.json"
     sku_path = OUTPUT_DIR / "sku_transaction_coverage.csv"
     quantity_path = OUTPUT_DIR / "transaction_quantity_distribution.csv"
-
     summary_path.write_text(
         json.dumps(summary, indent=4, ensure_ascii=False, default=str),
         encoding="utf-8",
     )
-
     sku_profile.to_csv(sku_path, index=False)
     quantity_profile.to_csv(quantity_path, index=False)
-
     print("\n" + "=" * 65)
     print("PROFILE SUMMARY")
     print("=" * 65)
     print(json.dumps(summary, indent=4, ensure_ascii=False, default=str))
-
     print("\nQUANTITY DISTRIBUTION")
     print(quantity_profile.to_string(index=False))
-
     print("\nTOP 10 SKUs BY TRANSACTION COUNT")
     print(sku_profile.head(TOP_N_SKUS).to_string(index=False))
-
     print("\nOUTPUT FILES")
     for path in [summary_path, sku_path, quantity_path]:
         print(f"- {path.relative_to(PROJECT_ROOT).as_posix()}")
 
-
-# ============================================================
-# 8. MAIN
-# ============================================================
-
+# 8. Main
 def main() -> None:
     df = load_sales_data(INPUT_FILE)
-
     summary = profile_data_coverage(df)
     summary["transaction_frequency"] = profile_transaction_frequency(df)
-
     quantity_profile = profile_quantity_distribution(df)
     sku_profile = profile_sku_coverage(df)
-
     save_reports(
         summary=summary,
         sku_profile=sku_profile,
         quantity_profile=quantity_profile,
     )
-
     print("\nProfiling completed.")
     print("The source dataset was not modified.")
-
-
 if __name__ == "__main__":
     main()

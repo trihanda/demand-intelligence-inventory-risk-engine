@@ -1,0 +1,4 @@
+anomaly_id,dataset,record_id,field,anomaly_type,description,detected_rules,reconciliation_status
+ANOM-0001,sales_transactions,SIL-DUP-SIL-00011893,"invoice_id,sku,warehouse_id,transaction_date,quantity",duplicate_candidate,Copied an existing transaction's business fields with a new line ID; review before removal.,duplicate_business_record_candidate,detected
+ANOM-0002,sales_transactions,SIL-00021850,customer_id,missing_value,Customer reference intentionally missing.,missing_identifier,detected
+ANOM-0003,sales_transactions,SIL-00013810,quantity,invalid_value,Negative quantity intentionally injected; determine business treatment before modeling.,negative_quantity,detected

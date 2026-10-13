@@ -1,16 +1,39 @@
-from __future__ import annotations
+"""
+Generate reproducible synthetic datasets for the
+Demand Intelligence & Inventory Risk Engine.
 
-"""Reproducible synthetic data generator for Demand Intelligence & Inventory Risk Engine.
+Purpose:
+    Generate relational datasets for demand forecasting, inventory risk,
+    quotation intelligence, and subscription renewal analysis. Controlled
+    data-quality anomalies are injected and documented in anomaly_log.csv.
 
-Generates nine relational CSV datasets plus an anomaly log and generation report.
-Base records are valid and referentially consistent. Controlled data-quality anomalies
-are injected afterward and recorded in anomaly_log.csv.
+Input:
+    No external input files are required.
+
+Outputs:
+    data/synthetic/
+        products.csv
+        warehouses.csv
+        customers.csv
+        sales_transactions.csv
+        inventory_snapshots.csv
+        purchase_orders.csv
+        sales_quotations.csv
+        quotation_lines.csv
+        subscription_records.csv
+        anomaly_log.csv
+        generation_report.json
 
 Usage:
     python src/generate_synthetic_data.py
     python src/generate_synthetic_data.py --output-dir data/synthetic --seed 42
+
+Notes:
+    All records are synthetic. Review anomaly_log.csv before cleaning or
+    modeling. The generator validates referential integrity before saving.
 """
 
+from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
@@ -19,14 +42,13 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-
+# Configuration
 DEFAULT_SEED = 42
 DEFAULT_START_DATE = "2023-10-01"
 DEFAULT_END_DATE = "2026-09-30"
 DEFAULT_PRODUCTS = 100
 DEFAULT_WAREHOUSES = 3
 DEFAULT_CUSTOMERS = 250
-
 CATEGORIES = ["Networking", "Cabling", "Network Security", "Load Balancer"]
 DEMAND_TYPES = ["stable", "trend", "seasonal", "intermittent", "declining"]
 DEMAND_TYPE_PROBS = [0.30, 0.20, 0.22, 0.18, 0.10]
@@ -61,13 +83,13 @@ def make_master_data(rng: np.random.Generator, n_products: int, n_warehouses: in
         "active_flag": True,
     })
     products["unit_price"] = np.maximum(products["unit_price"], products["unit_cost"] * 1.15).round(2)
-
-    warehouse_names = ["Jakarta Distribution Center", "Surabaya Distribution Center", "Bandung Distribution Center"]
     warehouses = pd.DataFrame({
-        "warehouse_id": [f"WH-{i:02d}" for i in range(1, n_warehouses + 1)],
-        "warehouse_name": [warehouse_names[i] if i < len(warehouse_names) else f"Regional Warehouse {i+1:02d}" for i in range(n_warehouses)],
-        "city": [(["Jakarta", "Surabaya", "Bandung"][i] if i < 3 else f"City-{i+1}") for i in range(n_warehouses)],
-        "country": "Indonesia",
+        "warehouse_id": [
+            f"WH-{i:02d}" for i in range(1, n_warehouses + 1)
+        ],
+        "warehouse_name": [
+            f"Warehouse {i}" for i in range(1, n_warehouses + 1)
+        ],
     })
 
     customer_segments = ["SMB", "Mid-Market", "Enterprise", "Public Sector"]
@@ -90,7 +112,6 @@ def generate_sales(rng: np.random.Generator, products: pd.DataFrame, warehouses:
     invoice_line_counter = 1
     customer_ids = customers["customer_id"].to_numpy()
     warehouse_ids = warehouses["warehouse_id"].to_numpy()
-
     for p in products.itertuples(index=False):
         base = float(rng.uniform(4, 35))
         for wi, week_end in enumerate(week_ends):
@@ -125,8 +146,12 @@ def generate_sales(rng: np.random.Generator, products: pd.DataFrame, warehouses:
                 tx_date = week_end - pd.Timedelta(days=int(rng.integers(0, 7)))
                 tx_date = max(start, tx_date)
                 warehouse_id = str(rng.choice(warehouse_ids))
-                customer_id = str(rng.choice(customer_ids))
-                unit_price = float(p.unit_price * rng.uniform(0.96, 1.04))
+                customer_id = str(rng.choice(customer_ids))                
+                unit_price = round(
+                    float(p.unit_price * rng.uniform(0.96, 1.04)),
+                    2,
+                )
+
                 rows.append({
                     "invoice_line_id": f"SIL-{invoice_line_counter:08d}",
                     "invoice_id": f"INV-{invoice_line_counter:07d}",
@@ -135,7 +160,7 @@ def generate_sales(rng: np.random.Generator, products: pd.DataFrame, warehouses:
                     "warehouse_id": warehouse_id,
                     "customer_id": customer_id,
                     "quantity": int(qty),
-                    "unit_price": round(unit_price, 2),
+                    "unit_price": unit_price,
                     "line_amount": round(unit_price * int(qty), 2),
                     "transaction_status": "posted",
                 })
@@ -278,7 +303,6 @@ def generate_subscriptions(rng: np.random.Generator, products: pd.DataFrame, cus
 def inject_controlled_anomalies(datasets: dict[str, pd.DataFrame], rng: np.random.Generator) -> pd.DataFrame:
     """Inject known data-quality anomalies and record exactly what was changed."""
     log: list[dict[str, Any]] = []
-
     def record(dataset: str, record_id: str, field: str, anomaly_type: str, description: str):
         log.append({
             "anomaly_id": f"ANOM-{len(log) + 1:04d}",
@@ -288,7 +312,6 @@ def inject_controlled_anomalies(datasets: dict[str, pd.DataFrame], rng: np.rando
             "anomaly_type": anomaly_type,
             "description": description,
         })
-
     # Duplicate candidate: append a copy of an existing invoice line with its own original ID retained.
     sales = datasets["sales_transactions"].copy()
     if len(sales) > 10:
@@ -297,21 +320,17 @@ def inject_controlled_anomalies(datasets: dict[str, pd.DataFrame], rng: np.rando
         duplicate["invoice_line_id"] = f"SIL-DUP-{source['invoice_line_id']}"
         sales = pd.concat([sales, pd.DataFrame([duplicate])], ignore_index=True)
         record("sales_transactions", duplicate["invoice_line_id"], "invoice_id,sku,warehouse_id,transaction_date,quantity", "duplicate_candidate", "Copied an existing transaction's business fields with a new line ID; review before removal.")
-
     # Missing customer reference on one transaction (a data-quality anomaly).
     if len(sales) > 20:
         idx = int(sales.index[20])
         sales.loc[idx, "customer_id"] = pd.NA
         record("sales_transactions", sales.loc[idx, "invoice_line_id"], "customer_id", "missing_value", "Customer reference intentionally missing.")
-
     # Invalid negative quantity on one separate row.
     if len(sales) > 30:
         idx = int(sales.index[30])
         sales.loc[idx, "quantity"] = -abs(int(sales.loc[idx, "quantity"]))
         record("sales_transactions", sales.loc[idx, "invoice_line_id"], "quantity", "invalid_value", "Negative quantity intentionally injected; determine business treatment before modeling.")
-
     datasets["sales_transactions"] = sales
-
     # Missing approval timestamp for one quotation.
     quotes = datasets["sales_quotations"].copy()
     if len(quotes) > 5:
@@ -319,7 +338,6 @@ def inject_controlled_anomalies(datasets: dict[str, pd.DataFrame], rng: np.rando
         quotes.loc[idx, "approval_at"] = pd.NaT
         record("sales_quotations", quotes.loc[idx, "quotation_id"], "approval_at", "missing_value", "Approval timestamp intentionally missing; exclude from direct turnaround calculation until resolved.")
     datasets["sales_quotations"] = quotes
-
     # Invalid reserved quantity above on-hand for one inventory snapshot.
     inventory = datasets["inventory_snapshots"].copy()
     if len(inventory) > 5:
@@ -327,7 +345,6 @@ def inject_controlled_anomalies(datasets: dict[str, pd.DataFrame], rng: np.rando
         inventory.loc[idx, "reserved_quantity"] = int(inventory.loc[idx, "on_hand_quantity"]) + 25
         record("inventory_snapshots", f"{inventory.loc[idx, 'snapshot_date']}|{inventory.loc[idx, 'sku']}|{inventory.loc[idx, 'warehouse_id']}", "reserved_quantity", "inconsistent_value", "Reserved quantity intentionally exceeds on-hand quantity.")
     datasets["inventory_snapshots"] = inventory
-
     # Missing renewal date for one subscription.
     subscriptions = datasets["subscription_records"].copy()
     if len(subscriptions) > 5:
@@ -335,13 +352,11 @@ def inject_controlled_anomalies(datasets: dict[str, pd.DataFrame], rng: np.rando
         subscriptions.loc[idx, "renewal_date"] = pd.NaT
         record("subscription_records", subscriptions.loc[idx, "subscription_id"], "renewal_date", "missing_value", "Renewal date intentionally missing.")
     datasets["subscription_records"] = subscriptions
-
     return pd.DataFrame(log, columns=["anomaly_id", "dataset", "record_id", "field", "anomaly_type", "description"])
 
 
 def validate_base_relations(datasets: dict[str, pd.DataFrame]) -> list[str]:
     """Validate identifiers/foreign keys that should remain valid even after anomaly injection.
-
     Missing foreign keys are permitted only for the documented sales customer anomaly.
     Duplicate business records and value anomalies are logged separately.
     """
@@ -355,7 +370,6 @@ def validate_base_relations(datasets: dict[str, pd.DataFrame]) -> list[str]:
     quotes = datasets["sales_quotations"]
     quote_lines = datasets["quotation_lines"]
     subs = datasets["subscription_records"]
-
     checks = [
         ("sales_transactions.sku", sales["sku"].dropna(), products),
         ("sales_transactions.warehouse_id", sales["warehouse_id"].dropna(), warehouses),
@@ -374,7 +388,6 @@ def validate_base_relations(datasets: dict[str, pd.DataFrame]) -> list[str]:
         unknown = set(values) - valid
         if unknown:
             errors.append(f"{name}: {len(unknown)} unknown foreign key value(s), e.g. {next(iter(unknown))}")
-
     # Primary identifiers should remain unique. Duplicate candidate intentionally has unique line ID.
     unique_keys = {
         "products.sku": (datasets["products"], "sku"),
@@ -409,7 +422,6 @@ def main() -> None:
         raise ValueError("end-date must be later than start-date")
     if min(args.products, args.warehouses, args.customers) < 1:
         raise ValueError("products, warehouses, and customers must all be >= 1")
-
     rng = np.random.default_rng(args.seed)
     products, warehouses, customers = make_master_data(rng, args.products, args.warehouses, args.customers)
     datasets: dict[str, pd.DataFrame] = {
@@ -424,15 +436,12 @@ def main() -> None:
     datasets["sales_quotations"] = quotes
     datasets["quotation_lines"] = quote_lines
     datasets["subscription_records"] = generate_subscriptions(rng, products, customers, start, end)
-
     anomaly_log = inject_controlled_anomalies(datasets, rng)
     relation_errors = validate_base_relations(datasets)
     if relation_errors:
         raise RuntimeError("Referential integrity validation failed:\n- " + "\n- ".join(relation_errors))
-
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-
     row_counts: dict[str, int] = {}
     for name, df in datasets.items():
         filename = f"{name}.csv"
@@ -440,7 +449,6 @@ def main() -> None:
         row_counts[filename] = int(len(df))
     anomaly_log.to_csv(output_dir / "anomaly_log.csv", index=False)
     row_counts["anomaly_log.csv"] = int(len(anomaly_log))
-
     sales = datasets["sales_transactions"]
     report = {
         "project": "Demand Intelligence & Inventory Risk Engine",
@@ -464,7 +472,6 @@ def main() -> None:
     }
     with open(output_dir / "generation_report.json", "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False, default=json_safe)
-
     print("\n=== SYNTHETIC DATA GENERATION REPORT ===")
     print(f"Output directory       : {output_dir}")
     print(f"Random seed            : {args.seed}")
@@ -481,7 +488,5 @@ def main() -> None:
         print(f"  {filename:<32} {count:>8,}")
     print("  generation_report.json          written")
     print("\nGeneration completed. Review anomaly_log.csv before data cleaning.")
-
-
 if __name__ == "__main__":
     main()

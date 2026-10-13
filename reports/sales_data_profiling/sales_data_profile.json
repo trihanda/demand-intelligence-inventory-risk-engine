@@ -1,0 +1,83 @@
+{
+    "dataset": "data/synthetic/sales_transactions.csv",
+    "row_count": 32134,
+    "column_count": 10,
+    "columns": [
+        "invoice_line_id",
+        "invoice_id",
+        "transaction_date",
+        "sku",
+        "warehouse_id",
+        "customer_id",
+        "quantity",
+        "unit_price",
+        "line_amount",
+        "transaction_status"
+    ],
+    "date_column": "transaction_date",
+    "sku_column": "sku",
+    "quantity_column": "quantity",
+    "date_coverage": {
+        "earliest_date": "2023-10-01",
+        "latest_date": "2026-09-27",
+        "calendar_days_inclusive": 1093,
+        "invalid_or_missing_dates": 0
+    },
+    "sku_coverage": {
+        "unique_skus": 100,
+        "missing_sku_rows": 0
+    },
+    "transaction_coverage": {
+        "transactions_per_calendar_day": 29.4,
+        "transactions_per_sku": 321.34
+    },
+    "transaction_frequency": {
+        "sku_count_with_transactions": 100,
+        "minimum_transactions_per_sku": 85,
+        "median_transactions_per_sku": 381.5,
+        "mean_transactions_per_sku": 321.34,
+        "maximum_transactions_per_sku": 430,
+        "top_skus_by_transaction_count": [
+            {
+                "sku": "SKU-0085",
+                "transaction_count": 430
+            },
+            {
+                "sku": "SKU-0019",
+                "transaction_count": 423
+            },
+            {
+                "sku": "SKU-0086",
+                "transaction_count": 415
+            },
+            {
+                "sku": "SKU-0048",
+                "transaction_count": 412
+            },
+            {
+                "sku": "SKU-0095",
+                "transaction_count": 410
+            },
+            {
+                "sku": "SKU-0062",
+                "transaction_count": 408
+            },
+            {
+                "sku": "SKU-0055",
+                "transaction_count": 407
+            },
+            {
+                "sku": "SKU-0024",
+                "transaction_count": 407
+            },
+            {
+                "sku": "SKU-0035",
+                "transaction_count": 405
+            },
+            {
+                "sku": "SKU-0046",
+                "transaction_count": 405
+            }
+        ]
+    }
+}

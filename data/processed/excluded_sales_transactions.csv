@@ -1,0 +1,3 @@
+invoice_line_id,invoice_id,transaction_date,sku,warehouse_id,customer_id,quantity,unit_price,line_amount,transaction_status,source_row_number,exclusion_reason
+SIL-00013810,INV-0013810,2023-10-01,SKU-0043,WH-02,CUS-00249,-1,6587.05,6587.05,posted,32,negative_quantity_requires_business_review
+SIL-DUP-SIL-00011893,INV-0011893,2023-10-01,SKU-0037,WH-02,CUS-00092,1,1582.39,1582.39,posted,32135,duplicate_business_record_candidate

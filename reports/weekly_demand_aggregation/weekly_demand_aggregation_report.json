@@ -1,0 +1,24 @@
+{
+  "task": "weekly_demand_aggregation",
+  "input_file": "data\\processed\\standardized_sales_transactions.csv",
+  "output_file": "data\\processed\\weekly_demand.csv",
+  "week_definition": "Monday-Sunday; week_end is Sunday",
+  "aggregation_grain": "one row per SKU per week",
+  "aggregation_measure": "sum of quantity",
+  "zero_demand_handling": "Missing SKU-week combinations are filled with zero under the synthetic-data completeness assumption.",
+  "source_rows": 32132,
+  "source_skus": 100,
+  "source_date_min": "2023-10-01",
+  "source_date_max": "2026-09-27",
+  "output_rows": 15700,
+  "output_skus": 100,
+  "output_weeks": 157,
+  "zero_demand_sku_weeks": 2459,
+  "total_weekly_quantity": 285808,
+  "validation": {
+    "unique_sku_week_pairs": true,
+    "no_missing_values": true,
+    "no_negative_weekly_quantity": true,
+    "quantity_reconciles_to_source": true
+  }
+}

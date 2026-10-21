@@ -1,0 +1,168 @@
+{
+  "task": "forecasting_data_preparation",
+  "scope": "Inventory-managed hardware",
+  "input_files": {
+    "weekly_demand": "data/processed/weekly_demand.csv",
+    "products": "data/synthetic/products.csv",
+    "calendar": "data/synthetic/calendar.csv"
+  },
+  "output_file": "data/processed/forecasting_ready_dataset.csv",
+  "report_file": "reports/forecasting_data_preparation/forecasting_data_preparation_report.json",
+  "sku_count": 600,
+  "week_count": 157,
+  "row_count": 94200,
+  "first_week": "2023-10-02",
+  "last_week": "2026-09-28",
+  "total_demand": 1213876,
+  "calendar_reconciliation": {
+    "calendar_date_min": "2023-10-01",
+    "calendar_date_max": "2026-09-30",
+    "calendar_date_count": 1096,
+    "complete_calendar_weeks_in_demand_series": 156,
+    "partial_calendar_weeks_in_demand_series": 1,
+    "weeks_without_calendar_coverage": 0,
+    "closure_affected_weeks_in_demand_series": 13,
+    "zero_demand_weeks": 5,
+    "zero_demand_weeks_with_configured_closure": 5,
+    "zero_demand_weeks_without_configured_closure": 0
+  },
+  "feature_engineering": {
+    "target": "weekly_quantity",
+    "lag_weeks": [
+      1,
+      2,
+      4,
+      13,
+      26,
+      52
+    ],
+    "rolling_windows_weeks": [
+      4,
+      13,
+      26
+    ],
+    "rolling_features_shifted_by_one_week": true,
+    "current_target_excluded_from_lags_and_rolling_windows": true,
+    "calendar_features_known_from_configured_calendar": [
+      "calendar_days_covered",
+      "business_days_in_week",
+      "closure_days_in_week",
+      "closure_reason",
+      "is_closure_affected_week",
+      "calendar_coverage_status",
+      "is_partial_calendar_week"
+    ],
+    "seasonality_features": [
+      "month",
+      "quarter",
+      "iso_week",
+      "week_of_year_sin",
+      "week_of_year_cos",
+      "month_sin",
+      "month_cos"
+    ],
+    "excluded_product_fields": [
+      "demand_type_seed: excluded because it is a synthetic generator label and would risk target leakage"
+    ]
+  },
+  "time_split": {
+    "method": "chronological split by target week; partial-calendar weeks are excluded",
+    "train_weeks": 130,
+    "validation_weeks": 13,
+    "test_weeks": 13,
+    "train_first_week": "2023-10-02",
+    "train_last_week": "2026-03-23",
+    "validation_first_week": "2026-03-30",
+    "validation_last_week": "2026-06-22",
+    "test_first_week": "2026-06-29",
+    "test_last_week": "2026-09-21",
+    "excluded_partial_calendar_weeks": 1,
+    "excluded_weeks_without_calendar_coverage": 0
+  },
+  "demand_pattern_segmentation": {
+    "purpose": "Evaluation segmentation only; not a forecasting predictor.",
+    "derived_from_split": "train only",
+    "training_week_count": 130,
+    "adi_threshold": 1.32,
+    "cv_squared_threshold": 0.49,
+    "cv_squared_definition": "Squared coefficient of variation of positive-demand weekly quantities, using population standard deviation (ddof=0).",
+    "intermittent_demand_flag_definition": "True when training ADI >= 1.32; includes both intermittent and lumpy patterns.",
+    "sku_counts_by_pattern": {
+      "erratic": 96,
+      "intermittent": 120,
+      "lumpy": 76,
+      "smooth": 308
+    },
+    "intermittent_demand_sku_count": 196,
+    "sku_count": 600,
+    "labels_use_validation_or_test_targets": false,
+    "training_first_week": "2023-10-02",
+    "training_last_week": "2026-03-23"
+  },
+  "split_summary": {
+    "train": {
+      "rows": 78000,
+      "weeks": 130,
+      "modeling_eligible_rows": 46800
+    },
+    "validation": {
+      "rows": 7800,
+      "weeks": 13,
+      "modeling_eligible_rows": 7800
+    },
+    "test": {
+      "rows": 7800,
+      "weeks": 13,
+      "modeling_eligible_rows": 7800
+    },
+    "excluded_partial_calendar_week": {
+      "rows": 600,
+      "weeks": 1,
+      "modeling_eligible_rows": 0
+    },
+    "excluded_missing_calendar": {
+      "rows": 0,
+      "weeks": 0,
+      "modeling_eligible_rows": 0
+    }
+  },
+  "modeling_readiness": {
+    "required_history_features": [
+      "demand_lag_1",
+      "demand_lag_2",
+      "demand_lag_4",
+      "demand_lag_13",
+      "demand_lag_26",
+      "demand_lag_52",
+      "rolling_mean_4w",
+      "rolling_mean_13w",
+      "rolling_mean_26w",
+      "rolling_std_13w"
+    ],
+    "modeling_eligible_rows": 62400,
+    "rows_not_yet_eligible_due_to_insufficient_history": 31200,
+    "notes": [
+      "Rows with incomplete lag/rolling history remain in the exported dataset for auditability, but modeling_eligible=False.",
+      "The partial final calendar week is retained for traceability and excluded from model eligibility and split assignment.",
+      "The validation and test sets are 13-week chronological windows. This dataset supports rolling one-step-ahead evaluation; a fixed-origin 13-week forecast evaluation must explicitly construct future horizons from a shared forecast origin."
+    ]
+  },
+  "validation": {
+    "unique_sku_week_pairs": true,
+    "complete_hardware_sku_week_grid": true,
+    "expected_600_hardware_skus": true,
+    "expected_157_weeks": true,
+    "expected_94200_rows": true,
+    "no_missing_targets": true,
+    "no_negative_targets": true,
+    "calendar_week_features_unique": true,
+    "calendar_week_counts_reconcile_with_demand_weeks": true,
+    "all_demand_weeks_have_calendar_record": true,
+    "partial_calendar_weeks_excluded_from_modeling": true,
+    "lag_features_do_not_use_current_target": true,
+    "demand_pattern_labels_derived_from_training_only": true,
+    "one_training_demand_pattern_per_sku": true,
+    "demand_pattern_labels_not_in_predictor_feature_lists": true,
+    "all_checks_pass": true
+  }
+}

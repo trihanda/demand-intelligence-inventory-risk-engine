@@ -9,6 +9,7 @@ __pycache__/
 # Environment variables and secrets
 .env# Generated synthetic data
 data/synthetic/
+data/processed/
 
 # Python cache
 __pycache__/

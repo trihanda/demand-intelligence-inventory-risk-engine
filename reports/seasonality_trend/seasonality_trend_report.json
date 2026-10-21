@@ -1,0 +1,123 @@
+{
+  "scope": "Inventory-managed hardware",
+  "sku_count": 600,
+  "week_count": 157,
+  "row_count": 94200,
+  "first_week": "2023-10-02",
+  "last_week": "2026-09-28",
+  "total_demand": 1213876,
+  "weekly_demand_mean": 7731.6942675159235,
+  "weekly_demand_std": 1920.2157653283773,
+  "linear_trend_slope_units_per_week": 5.451965715490679,
+  "first_13_week_average": 7515.307692307692,
+  "last_13_week_average": 9627.846153846154,
+  "highest_average_demand_quarter": 3,
+  "lowest_average_demand_quarter": 2,
+  "annual_weekly_profile_correlations": {
+    "2023_vs_2024": -0.27877562527120375,
+    "2023_vs_2025": 0.2671324306754662,
+    "2023_vs_2026": null,
+    "2024_vs_2025": 0.6027921079390369,
+    "2024_vs_2026": 0.6270606991244964,
+    "2025_vs_2026": 0.5916312791200724
+  },
+  "comparable_weeks_by_year_pair": {
+    "2023_vs_2024": 13,
+    "2023_vs_2025": 13,
+    "2023_vs_2026": 1,
+    "2024_vs_2025": 52,
+    "2024_vs_2026": 39,
+    "2025_vs_2026": 39
+  },
+  "calendar_reconciliation": {
+    "source_file": "data/synthetic/calendar.csv",
+    "calendar_date_min": "2023-10-01",
+    "calendar_date_max": "2026-09-30",
+    "calendar_date_count": 1096,
+    "complete_calendar_weeks_in_demand_series": 156,
+    "partial_calendar_weeks_in_demand_series": 1,
+    "weeks_without_calendar_coverage": 0,
+    "closure_affected_weeks_in_demand_series": 13,
+    "zero_demand_weeks": 5,
+    "zero_demand_weeks_with_configured_closure": 5,
+    "zero_demand_weeks_without_configured_closure": 0,
+    "zero_demand_weeks_without_calendar_coverage": 0,
+    "interpretation": "Of 5 zero-demand week(s), 5 overlap a configured closure period, 0 do not overlap a configured closure, and 0 cannot be assessed because calendar coverage is absent. Overlap is descriptive and does not establish that closure alone caused zero demand."
+  },
+  "trend_interpretation": {
+    "linear_slope_direction": "positive",
+    "linear_trend_slope_units_per_week": 5.452,
+    "linear_slope_as_percent_of_mean_weekly_demand_per_week": 0.0705,
+    "first_13_week_average": 7515.3077,
+    "last_13_week_average": 9627.8462,
+    "first_to_last_13_week_change_units": 2112.5385,
+    "first_to_last_13_week_change_percent": 28.1098,
+    "summary": "The fitted linear trend is positive at 5.45 units per week, equivalent to 0.0705% of mean weekly demand per week. The last 13-week average is 28.1% higher than the first 13-week average. This compares two windows and does not by itself establish a sustained increase."
+  },
+  "quarterly_seasonality_interpretation": {
+    "highest_average_demand_quarter": 3,
+    "highest_average_weekly_demand": 9379.35,
+    "lowest_average_demand_quarter": 2,
+    "lowest_average_weekly_demand": 6070.5641,
+    "high_minus_low_average_weekly_demand": 3308.7859,
+    "high_vs_low_percent_above_lowest": 54.5054,
+    "summary": "Q3 has the highest average weekly demand and Q2 the lowest among the observed calendar quarters. Q3's average is 54.5% above Q2's average in this observed dataset. This is an observed quarter-level difference, not confirmation of stable seasonality."
+  },
+  "annual_profile_interpretation": {
+    "summary": "Valid year-pair correlations range from -0.279 to 0.627. Interpret them alongside the number of overlapping weeks; partial years are not directly comparable to full years. Correlation alone does not confirm repeatable seasonality.",
+    "year_pair_details": {
+      "2023_vs_2024": {
+        "correlation": -0.27877562527120375,
+        "comparable_iso_weeks": 13,
+        "interpretation": "The paired annual weekly profiles have a negative correlation (r=-0.279) across 13 overlapping ISO weeks. This is descriptive similarity, not proof of stable or causal seasonality."
+      },
+      "2023_vs_2025": {
+        "correlation": 0.2671324306754662,
+        "comparable_iso_weeks": 13,
+        "interpretation": "The paired annual weekly profiles have a positive correlation (r=0.267) across 13 overlapping ISO weeks. This is descriptive similarity, not proof of stable or causal seasonality."
+      },
+      "2023_vs_2026": {
+        "correlation": null,
+        "comparable_iso_weeks": 1,
+        "interpretation": "Not interpreted as a reliable correlation because the pair has fewer than 10 overlapping ISO weeks or insufficient variation in one or both profiles."
+      },
+      "2024_vs_2025": {
+        "correlation": 0.6027921079390369,
+        "comparable_iso_weeks": 52,
+        "interpretation": "The paired annual weekly profiles have a positive correlation (r=0.603) across 52 overlapping ISO weeks. This is descriptive similarity, not proof of stable or causal seasonality."
+      },
+      "2024_vs_2026": {
+        "correlation": 0.6270606991244964,
+        "comparable_iso_weeks": 39,
+        "interpretation": "The paired annual weekly profiles have a positive correlation (r=0.627) across 39 overlapping ISO weeks. This is descriptive similarity, not proof of stable or causal seasonality."
+      },
+      "2025_vs_2026": {
+        "correlation": 0.5916312791200724,
+        "comparable_iso_weeks": 39,
+        "interpretation": "The paired annual weekly profiles have a positive correlation (r=0.592) across 39 overlapping ISO weeks. This is descriptive similarity, not proof of stable or causal seasonality."
+      }
+    }
+  },
+  "caveats": [
+    "All observations and calendar closure periods are synthetic; they represent generator assumptions, not verified real-world market behavior or official holiday declarations.",
+    "Quarterly averages and annual profile correlations are descriptive diagnostics; neither proves that seasonality is stable or will persist in the forecast horizon.",
+    "Calendar closure overlap helps explain recorded zero-demand weeks but does not prove closure alone caused zero demand or capture latent/unfulfilled customer demand.",
+    "The analysis uses Monday-Sunday weekly bins and assigns each bin to a quarter using week_start; first or last bins may be partial relative to the configured data window.",
+    "The fitted linear slope summarizes an overall linear direction and does not mean demand changes by the same amount every week. The first-versus-last 13-week comparison is not a substitute for time-based model evaluation.",
+    "Calendar reconciliation found 5 zero-demand week(s) overlapping configured closure periods, 0 without a configured closure, and 0 not assessable due to missing calendar coverage. Review these distinctions before interpreting zero demand.",
+    "The calendar covers 2023-10-01 through 2026-09-30; 1 demand week(s) have partial daily-calendar coverage. Do not interpret missing dates in a partial week as non-business days or closure days."
+  ],
+  "validation": {
+    "complete_sku_week_grid": true,
+    "no_duplicate_sku_week_pairs": true,
+    "no_missing_demand": true,
+    "no_negative_demand": true,
+    "expected_600_hardware_skus": true,
+    "expected_157_weeks": true,
+    "expected_94200_rows": true,
+    "calendar_date_unique": true,
+    "calendar_week_features_unique": true,
+    "calendar_overlaps_demand_period": true,
+    "all_checks_pass": true
+  }
+}

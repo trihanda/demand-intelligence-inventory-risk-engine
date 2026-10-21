@@ -1,0 +1,52 @@
+{
+  "task": "demand_pattern_analysis",
+  "input_file": "data\\processed\\weekly_demand.csv",
+  "analysis_grain": "SKU-week",
+  "source_rows": 157000,
+  "sku_count": 1000,
+  "week_count": 157,
+  "date_min": "2023-10-02",
+  "date_max": "2026-10-04",
+  "total_demand": 2047284,
+  "sku_demand_pattern_counts": {
+    "erratic": 175,
+    "intermittent": 187,
+    "lumpy": 124,
+    "smooth": 514
+  },
+  "mean_total_weekly_demand": 13040.025477707006,
+  "median_total_weekly_demand": 13599.0,
+  "peak_demand_week": {
+    "week_start": "2026-09-28",
+    "week_end": "2026-10-04",
+    "total_weekly_demand": 17693
+  },
+  "lowest_positive_demand_week": {
+    "week_start": "2024-06-10",
+    "week_end": "2024-06-16",
+    "total_weekly_demand": 9573
+  },
+  "classification_method": {
+    "adi_threshold": 1.32,
+    "cv_squared_threshold": 0.49,
+    "categories": [
+      "smooth",
+      "intermittent",
+      "erratic",
+      "lumpy",
+      "no_demand"
+    ]
+  },
+  "assumptions": [
+    "Zero-demand weeks inherit the synthetic dataset's complete transaction-capture assumption.",
+    "ADI/CV-squared classes are descriptive diagnostics, not automatic model-selection decisions.",
+    "The first and last calendar weeks may be partial relative to the historical date range."
+  ],
+  "validation": {
+    "one_profile_row_per_sku": true,
+    "one_trend_row_per_week": true,
+    "profile_total_reconciles": true,
+    "trend_total_reconciles": true,
+    "no_negative_demand": true
+  }
+}

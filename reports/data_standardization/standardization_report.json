@@ -2,8 +2,8 @@
   "input_file": "data/synthetic/sales_transactions.csv",
   "standardized_output": "data/processed/standardized_sales_transactions.csv",
   "excluded_output": "data/processed/excluded_sales_transactions.csv",
-  "input_rows": 32134,
-  "standardized_rows": 32132,
+  "input_rows": 500001,
+  "standardized_rows": 499999,
   "excluded_rows": 2,
   "missing_customer_id_rows_retained_if_otherwise_valid": 1,
   "standardized_negative_quantity_rows": 0,
@@ -18,6 +18,7 @@
   ],
   "exclusion_reason_counts": {
     "negative_quantity_requires_business_review": 1,
+    "missing_invalid_or_negative_line_amount": 1,
     "duplicate_business_record_candidate": 1
   },
   "decisions": [

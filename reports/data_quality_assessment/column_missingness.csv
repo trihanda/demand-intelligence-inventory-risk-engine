@@ -1,11 +1,16 @@
 column,data_type,missing_count,missing_percent
 customer_id,str,1,0.0
+exchange_rate_date,str,0,0.0
+exchange_rate_to_usd,float64,0,0.0
 invoice_id,str,0,0.0
 invoice_line_id,str,0,0.0
 line_amount,float64,0,0.0
+line_amount_usd,float64,0,0.0
 quantity,int64,0,0.0
 sku,str,0,0.0
+transaction_currency,str,0,0.0
 transaction_date,str,0,0.0
 transaction_status,str,0,0.0
 unit_price,float64,0,0.0
+unit_price_usd,float64,0,0.0
 warehouse_id,str,0,0.0

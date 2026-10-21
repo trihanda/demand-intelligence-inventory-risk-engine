@@ -1,3 +1,3 @@
-invoice_line_id,invoice_id,transaction_date,sku,warehouse_id,customer_id,quantity,unit_price,line_amount,transaction_status,source_row_number,exclusion_reason
-SIL-00013810,INV-0013810,2023-10-01,SKU-0043,WH-02,CUS-00249,-1,6587.05,6587.05,posted,32,negative_quantity_requires_business_review
-SIL-DUP-SIL-00011893,INV-0011893,2023-10-01,SKU-0037,WH-02,CUS-00092,1,1582.39,1582.39,posted,32135,duplicate_business_record_candidate
+invoice_line_id,invoice_id,transaction_date,sku,warehouse_id,customer_id,quantity,unit_price,line_amount,transaction_currency,exchange_rate_date,exchange_rate_to_usd,unit_price_usd,line_amount_usd,transaction_status,source_row_number,exclusion_reason
+SIL-000000031,INV-00000031,2023-10-02,SKU-00875,WH-01,CUS-002885,-5,15664904.0,-78324520.0,IDR,2023-10-01,6.4848e-05,1015.84,-5079.19,posted,32,negative_quantity_requires_business_review; missing_invalid_or_negative_line_amount
+SIL-DUP-SIL-000000006,INV-00000006,2023-10-02,SKU-00587,WH-01,CUS-004079,2,53383773.0,106767546.0,IDR,2023-10-01,6.4848e-05,3461.83,6923.66,posted,500002,duplicate_business_record_candidate

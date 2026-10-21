@@ -1,5 +1,6 @@
 source_row_number,invoice_line_id,invoice_id,sku,field,rule,severity,description
-22,SIL-00021850,INV-0021850,SKU-0068,customer_id,missing_identifier,high,Required identifier 'customer_id' is missing or blank.
-7,SIL-00011893,INV-0011893,SKU-0037,"invoice_id, sku, warehouse_id, transaction_date, quantity",duplicate_business_record_candidate,medium,Business fields match another row. Review before treating it as a duplicate.
-32135,SIL-DUP-SIL-00011893,INV-0011893,SKU-0037,"invoice_id, sku, warehouse_id, transaction_date, quantity",duplicate_business_record_candidate,medium,Business fields match another row. Review before treating it as a duplicate.
-32,SIL-00013810,INV-0013810,SKU-0043,quantity,negative_quantity,medium,Quantity is negative; determine whether this represents a return or invalid value.
+22,SIL-000000021,INV-00000021,SKU-00780,customer_id,missing_identifier,high,Required identifier 'customer_id' is missing or blank.
+32,SIL-000000031,INV-00000031,SKU-00875,line_amount,negative_line_amount,high,Line amount is negative.
+7,SIL-000000006,INV-00000006,SKU-00587,"invoice_id, sku, warehouse_id, transaction_date, quantity",duplicate_business_record_candidate,medium,Business fields match another row. Review before treating it as a duplicate.
+500002,SIL-DUP-SIL-000000006,INV-00000006,SKU-00587,"invoice_id, sku, warehouse_id, transaction_date, quantity",duplicate_business_record_candidate,medium,Business fields match another row. Review before treating it as a duplicate.
+32,SIL-000000031,INV-00000031,SKU-00875,quantity,negative_quantity,medium,Quantity is negative; determine whether this represents a return or invalid value.

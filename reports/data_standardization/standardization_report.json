@@ -2,8 +2,8 @@
   "input_file": "data/synthetic/sales_transactions.csv",
   "standardized_output": "data/processed/standardized_sales_transactions.csv",
   "excluded_output": "data/processed/excluded_sales_transactions.csv",
-  "input_rows": 500001,
-  "standardized_rows": 499999,
+  "input_rows": 625001,
+  "standardized_rows": 624999,
   "excluded_rows": 2,
   "missing_customer_id_rows_retained_if_otherwise_valid": 1,
   "standardized_negative_quantity_rows": 0,
@@ -29,5 +29,5 @@
     "Only 'posted' transactions were included."
   ],
   "anomaly_log_available": true,
-  "anomaly_log_rows": 6
+  "anomaly_log_rows": 5
 }

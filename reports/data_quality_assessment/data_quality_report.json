@@ -3,7 +3,7 @@
     "synthetic_data": true,
     "summary": {
         "dataset": "data/synthetic/sales_transactions.csv",
-        "row_count": 500001,
+        "row_count": 625001,
         "column_count": 15,
         "missing_cells": 1,
         "duplicate_invoice_line_id_rows": 0,
